@@ -76,7 +76,7 @@ RUN touch /var/log/cron.log
 
 #RUN service apache2 restart
 
-#RUN chown -R 1000 /var/www/html
+RUN chown -R 1000 /var/www/html
 
 RUN composer install --no-dev --prefer-dist --optimize-autoloader && \
     composer clear-cache
