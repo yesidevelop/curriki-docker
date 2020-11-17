@@ -1,2 +1,2 @@
-storage/*
-vendor/*
+api/storage/*
+api/vendor/*
