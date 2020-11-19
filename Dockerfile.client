@@ -7,7 +7,7 @@ COPY client/package.json /var/app/current/
 RUN npm install
 COPY client/ ./
 
-RUN ls /var/app/current
+RUN chmod 777 -R /var/app/current
 
 COPY entrypoint.client.sh /var/app/current/
 CMD ["/bin/sh", "/var/app/current/entrypoint.client.sh"]
