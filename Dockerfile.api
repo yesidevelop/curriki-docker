@@ -85,6 +85,7 @@ RUN composer install --prefer-dist --optimize-autoloader && \
 RUN chmod 777 -R /var/www/html/vendor
 RUN php /var/www/html/artisan key:generate
 RUN php /var/www/html/artisan config:cache
+RUN php /var/www/html/artisan storage:link
 EXPOSE 8000
 
 # COPY ./entrypoint.api.sh /var/www/html/
