@@ -79,18 +79,11 @@ RUN touch /var/log/cron.log
 RUN chown -R 1000 /var/www/html
 RUN chmod 777 -R /var/www/html/storage
 RUN chmod 777 -R /var/www/html/bootstrap
-RUN cp .env.example .env
+
 RUN composer install --prefer-dist --optimize-autoloader && \
     composer clear-cache
-RUN chmod 777 -R /var/www/html/vendor
-RUN php /var/www/html/artisan key:generate
-RUN php /var/www/html/artisan config:cache
-RUN php /var/www/html/artisan storage:link
+RUN chmod 777 -R /var/www/html
 EXPOSE 8000
 
-# COPY ./entrypoint.api.sh /var/www/html/
-# RUN chmod 777 /var/www/html/entrypoint.api.sh
-# RUN ["chmod", "+x", "/var/www/html/entrypoint.api.sh"]
-
-
-# ENTRYPOINT ["/var/www/html/entrypoint.api.sh"]
+COPY entrypoint.api.sh /var/www/html/
+CMD ["/bin/sh", "/var/app/current/entrypoint.api.sh"]
