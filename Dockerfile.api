@@ -80,6 +80,7 @@ RUN chown -R 1000 /var/www/html
 RUN chmod 777 -R /var/www/html/storage
 RUN chmod 777 -R /var/www/html/bootstrap
 RUN cp .env.example .env
+RUN chmod 777 -R /var/www/html/vendor
 RUN composer install --no-dev --prefer-dist --optimize-autoloader && \
     composer clear-cache
 RUN php /var/www/html/artisan key:generate
