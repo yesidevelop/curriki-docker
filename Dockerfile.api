@@ -53,17 +53,13 @@ RUN a2dissite 000-default.conf && a2ensite site.conf && a2enmod rewrite
 RUN usermod -u 1000 www-data && groupmod -g 1000 www-data
 #RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
-
-
 # Copy the PHP configuration file
 COPY ./php.ini /usr/local/etc/php/
 COPY api/ /var/www/html/
 
 WORKDIR /var/www/html
 
-
 # Cron Jobs
-
 COPY ./scheduler.cron /etc/cron.d/root
 
 # Give execution rights on the cron job
@@ -71,10 +67,7 @@ RUN chmod 0644 /etc/cron.d/root
 
 # Apply cron job
 RUN crontab /etc/cron.d/root
-
 RUN touch /var/log/cron.log
-
-#RUN service apache2 restart
 
 RUN chown -R 1000 /var/www/html
 RUN chmod 777 -R /var/www/html/storage
@@ -83,7 +76,12 @@ RUN chmod 777 -R /var/www/html/bootstrap
 RUN composer install --prefer-dist --optimize-autoloader && \
     composer clear-cache
 RUN chmod 777 -R /var/www/html
+
 EXPOSE 8000
 
-COPY entrypoint.api.sh /usr/local/bin/
-CMD ["/bin/sh", "-c", "/usr/local/bin/entrypoint.api.sh"]
+COPY api-init-container.sh /usr/local/bin/
+COPY api-entrypoint.sh /usr/local/bin/
+COPY api-laravel-echo-server.sh /usr/local/bin/
+COPY api-queue-worker.sh /usr/local/bin/
+
+CMD [ "/bin/sh", "-c", "/usr/local/bin/api-entrypoint.sh" ]
