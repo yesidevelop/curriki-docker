@@ -5,6 +5,9 @@ php /var/www/html/artisan config:cache
 php /var/www/html/artisan key:generate
 php /var/www/html/artisan passport:install
 php /var/www/html/artisan storage:link
+redis-server &
+laravel-echo-server start --force &
+php /var/www/html/artisan queue:work --timeout=0 &
 # php /var/www/html/artisan config:cache
 # chmod 777 -R /var/www/html/storage
 # service apache2 restart
