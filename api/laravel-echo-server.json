@@ -4,7 +4,11 @@
 	"clients": [],
 	"database": "redis",
 	"databaseConfig": {
-		"redis": {},
+		"redis": {
+			"port": "10836",
+			"host": "curriki.dev-redis.svc.cluster.local",
+			"password": "admin123"
+		},
 		"sqlite": {
 			"databasePath": "/database/laravel-echo-server.sqlite"
 		}
