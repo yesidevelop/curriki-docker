@@ -85,5 +85,5 @@ RUN composer install --prefer-dist --optimize-autoloader && \
 RUN chmod 777 -R /var/www/html
 EXPOSE 8000
 
-COPY entrypoint.api.sh /var/www/html/
-CMD ["/bin/sh", "/var/app/current/entrypoint.api.sh"]
+COPY entrypoint.api.sh /usr/local/bin/
+CMD ["/bin/sh", "-c", "/usr/local/bin/entrypoint.api.sh"]
