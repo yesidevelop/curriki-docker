@@ -80,4 +80,4 @@ EXPOSE 8000
 
 COPY api-init-container.sh /usr/local/bin/
 
-CMD ["/sbin/runit-wrapper"]
+CMD ["/bin/sh", "sleep", "infinity"]
