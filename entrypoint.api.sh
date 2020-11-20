@@ -10,5 +10,5 @@ laravel-echo-server start &
 php /var/www/html/artisan queue:work --timeout=0 &
 # php /var/www/html/artisan config:cache
 # chmod 777 -R /var/www/html/storage
-# service apache2 restart
+service apache2 restart
 while true; do sleep infinity ; done
