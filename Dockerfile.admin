@@ -60,5 +60,4 @@ RUN composer install --prefer-dist --optimize-autoloader && \
     composer clear-cache
 RUN chmod 777 -R /var/www/html
 
-
-
+EXPOSE 6000
