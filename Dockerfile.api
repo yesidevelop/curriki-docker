@@ -1,4 +1,4 @@
-FROM quay.io/eformat/curriki-api-base:latest
+FROM curriki-api-base:latest
 
 EXPOSE 8000
 
