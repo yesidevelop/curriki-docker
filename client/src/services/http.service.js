@@ -43,7 +43,7 @@ function remove(url, data, headers = {}) {
 
 function notificationSocket() {
   return {
-    host: `${window.location.origin}:4003`,
+    host: `${window.location.origin}`,
     auth: {
       headers: { ...getAuthHeader(), Accept: 'application/json' },
     },
