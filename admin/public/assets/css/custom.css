@@ -1,0 +1,61 @@
+.btn-sm-app {
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    font-size: 12px;
+    height: 45px;
+    margin: 0 5px 0px 5px;
+    min-width: 50px;
+    padding: 5px 5px;
+    position: relative;
+    text-align: center;
+    display: inline-block;
+}
+.btn-sm-app>.fas, .btn-sm-app>.glyphicon, .btn-sm-app>.ion {
+    display: block;
+    font-size: 15px;
+}
+.toast{
+	min-width: 400px;
+}
+.toasts-top-right{
+    z-index: 1051;
+}
+.btn-group.action-group.show {
+    z-index: 1000;
+}
+#overlay {
+    background: #ffffff;
+    color: #666666;
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 5000;
+    top: 0;
+    left: 0;
+    float: left;
+    text-align: center;
+    padding-top: 15%;
+    opacity: .80;
+}
+.spinner {
+    margin: 0 auto;
+    height: 64px;
+    width: 64px;
+    animation: rotate 0.8s infinite linear;
+    border: 5px solid firebrick;
+    border-right-color: transparent;
+    border-radius: 50%;
+}
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.table {
+    table-layout: fixed;
+    width: 100% !important;
+}
