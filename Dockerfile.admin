@@ -51,5 +51,14 @@ COPY admin/ /var/www/html/
 RUN service apache2 restart
 
 WORKDIR /var/www/html
-#RUN composer install --no-dev --prefer-dist --optimize-autoloader && \
-#    composer clear-cache
+
+RUN chown -R 1000 /var/www/html
+RUN chmod 777 -R /var/www/html/storage
+RUN chmod 777 -R /var/www/html/bootstrap
+
+RUN composer install --prefer-dist --optimize-autoloader && \
+    composer clear-cache
+RUN chmod 777 -R /var/www/html
+
+
+
