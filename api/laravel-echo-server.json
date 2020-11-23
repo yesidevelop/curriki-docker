@@ -5,9 +5,9 @@
 	"database": "redis",
 	"databaseConfig": {
 		"redis": {
-			"port": "10836",
-			"host": "curriki.dev-redis.svc.cluster.local",
-			"password": "admin123"
+			"port": "17716",
+			"host": "currikidb-headless.dev-redis.svc.cluster.local",
+			"password": "HJCYWYhQ"
 		},
 		"sqlite": {
 			"databasePath": "/database/laravel-echo-server.sqlite"
