@@ -30,6 +30,7 @@ RUN dnf install -y php php-cli php-common  \
         libedit \
         php-devel \
         fcgi \
+        wget \
         php-xmlrpc && \
         dnf clean all
 
@@ -48,6 +49,10 @@ RUN composer update --prefer-dist --optimize-autoloader && \
     composer clear-cache
 
 ADD php-fpm.conf /etc/
+
+# TODO: mv to a separate container and download locally to avoid dependecny on github
+# ./php-fpm-exporter.linux.amd64 --addr 127.0.0.1:8888 --fastcgi tcp://127.0.0.1:9999/status
+RUN wget https://github.com/bakins/php-fpm-exporter/releases/download/v0.6.1/php-fpm-exporter.linux.amd64 && chmod 755 php-fpm-exporter.linux.amd64
 
 USER 1001
 
