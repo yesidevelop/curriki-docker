@@ -56,5 +56,4 @@ RUN wget https://github.com/bakins/php-fpm-exporter/releases/download/v0.6.1/php
 
 USER 1001
 
-EXPOSE 9999
 CMD ["php-fpm", "-F", "-O"]
