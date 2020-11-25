@@ -1,0 +1,54 @@
+FROM  centos:8
+
+RUN dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+RUN dnf module enable php:remi-7.3 -y
+RUN dnf install dnf-plugins-core -y && dnf clean all
+RUN dnf config-manager --set-enabled PowerTools
+
+RUN dnf install -y php php-cli php-common  \
+        php-fpm \
+        php-bcmath \
+        php-gd \
+        php-intl \
+        php-json \
+        php-ldap  \
+        php-mbstring \
+        php-mcrypt \
+        php-opcache \
+        php-pdo \
+        php-pear  \
+        php-pecl-apcu \
+        php-pecl-imagick \
+        php-pecl-redis \
+        php-pecl-xdebug  \
+        php-pgsql \
+        php-mysqlnd \
+        php-soap \
+        php-tidy \
+        php-xml \
+        php-zip \
+        libedit \
+        php-devel \
+        php-xmlrpc && \
+        dnf clean all
+
+WORKDIR /var/www/html
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY api/ /var/www/html/
+COPY ./php.ini /usr/local/etc/php/
+COPY api/composer.json /var/www/
+RUN rm /etc/php-fpm.d/www.conf
+ADD pool.conf /etc/php-fpm.d/
+
+
+
+RUN composer update --prefer-dist --optimize-autoloader && \
+    composer clear-cache
+
+ADD php-fpm.conf /etc/
+
+USER 1001
+
+EXPOSE 9999
+CMD ["php-fpm", "-F", "-O"]
