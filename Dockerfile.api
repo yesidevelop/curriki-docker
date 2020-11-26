@@ -2,6 +2,10 @@ FROM curriki-api-base:latest
 
 EXPOSE 8000
 
+# TODO : Clean this up
+RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests deflate actions alias proxy_fcgi
+COPY ./site.conf /etc/apache2/sites-available/site.conf
+
 COPY api-init-container.sh /usr/local/bin/
 COPY api-entrypoint.sh /usr/local/bin/
 COPY api-laravel-echo-server.sh /usr/local/bin/
