@@ -1,0 +1,20 @@
+FROM node:10-alpine AS builder
+WORKDIR /var/app/current
+RUN ls /var/app/current
+COPY client/package*.json ./
+RUN ls /var/app/current
+COPY client/package.json /var/app/current/
+RUN npm install
+COPY client/ ./
+
+RUN chmod 777 -R /var/app/current
+RUN npm run build
+
+# COPY entrypoint.client.sh /var/app/current/
+# CMD ["/bin/sh", "/var/app/current/entrypoint.client.sh"]
+
+FROM registry.redhat.io/rhscl/nginx-116-rhel7
+
+COPY client/nginx.rh.conf /etc/opt/rh/rh-nginx116/nginx/nginx.conf
+COPY --from=builder /var/app/current/build $HOME
+CMD ["nginx", "-g", "daemon off;"]
