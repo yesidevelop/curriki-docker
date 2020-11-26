@@ -3,7 +3,7 @@ FROM curriki-api-base:latest
 EXPOSE 8000
 
 # TODO : Clean this up
-RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests deflate actions fastcgi alias proxy_fcgi
+RUN a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests deflate actions alias proxy_fcgi
 COPY ./site.conf /etc/apache2/sites-available/site.conf
 RUN service apache2 restart
 
