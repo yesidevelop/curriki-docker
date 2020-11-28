@@ -101,7 +101,7 @@ pipeline {
         stage("Build (Compile App)") {
             agent {
                 node {
-                    label "jenkins-slave-npm"
+                    label "jenkins-agent-npm"
                 }
             }
             steps {
@@ -113,7 +113,9 @@ pipeline {
 
                 echo '### Install deps ###'
                 // sh 'npm install'
-                sh 'npm  --registry http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
+                dir('client') {
+                    sh 'npm  --registry http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
+                }
 
                 echo '### Running linter ###'
                 // sh 'npm run lint'
@@ -123,15 +125,19 @@ pipeline {
                 // sh 'npm run test'
 
                 echo '### Running build ###'
-                sh '''
-                    npm run build
-                '''
+                dir('client') {
+                    sh '''
+                        npm run build
+                    '''
+                }
 
                 echo '### Packaging App for Nexus ###'
-                sh '''
-                    tar -zcvf ${PACKAGE} dist Dockerfile nginx.conf
-                    curl -v -f -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
-                '''
+                dir('client') {
+                    sh '''
+                        tar -zcvf ${PACKAGE} dist Dockerfile nginx.conf
+                        curl -v -f -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
+                    '''
+                }
             }
             // Post can be used both on individual stages and for the entire build.
         }
