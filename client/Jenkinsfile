@@ -1,18 +1,139 @@
 pipeline {
-     agent any
-     stages {
-        stage("Build") {
-            steps {
-                sh "sudo npm install"
-                sh "sudo npm run build"
+    agent {
+        label "master"
+    }
+
+    environment {
+        // GLobal Vars
+        NAME = "curriki-ui"
+        ARGOCD_CONFIG_REPO = "github.com/ActiveLearningStudio/rh-innovation-lab-open-shift.git"
+        ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
+        ARGOCD_CONFIG_REPO_BRANCH = "main"
+        
+        // Job name contains the branch eg ds-app-feature%2Fjenkins-123
+        JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
+
+        GIT_SSL_NO_VERIFY = true
+
+        // Credentials bound in OpenShift
+        GIT_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-git-auth")
+        NEXUS_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-nexus-password")
+        ARGOCD_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-argocd-token")
+
+        // Nexus Artifact repo 
+        NEXUS_REPO_NAME="labs-static"
+        NEXUS_REPO_HELM = "helm-charts"
+    }
+
+    // The options directive is for configuration that applies to the whole job.
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '50', artifactNumToKeepStr: '1'))
+        timeout(time: 15, unit: 'MINUTES')
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    stages {
+        stage('Perpare Environment') {
+            failFast true
+            parallel {
+                stage("Release Build") {
+                    options {
+                        skipDefaultCheckout(true)
+                    }
+                    agent {
+                        node {
+                            label "master"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH.startsWith("main") }
+                    }
+                    steps {
+                        script {
+                            env.TARGET_NAMESPACE = "labs-dev"
+                            env.APP_NAME = "${NAME}".replace("/", "-").toLowerCase()
+                        }
+                    }
+                }
+                stage("Sandbox Build") {
+                    options {
+                        skipDefaultCheckout(true)
+                    }
+                    agent {
+                        node {
+                            label "master"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH.startsWith("dev") || GIT_BRANCH.startsWith("feature") || GIT_BRANCH.startsWith("fix") }
+                    }
+                    steps {
+                        script {
+                            env.TARGET_NAMESPACE = "labs-dev"
+                            env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
+                            env.NODE_ENV = "test"
+                        }
+                    }
+                }
+                stage("Pull Request Build") {
+                    options {
+                        skipDefaultCheckout(true)
+                    }
+                    agent {
+                        node {
+                            label "master"
+                        }
+                    }
+                    when {
+                        expression { GIT_BRANCH.startsWith("PR-") }
+                    }
+                    steps {
+                        script {
+                            env.TARGET_NAMESPACE = "labs-dev"
+                            env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
+                        }
+                    }
+                }
             }
         }
-        stage("Deploy") {
-            steps {
-                sh "sudo rm -rf /root/curriki/client/build"
-                sh "sudo cp -r ${WORKSPACE}/build/ /root/curriki/client/build/"
+
+        stage("Build (Compile App)") {
+            agent {
+                node {
+                    label "jenkins-slave-npm"
+                }
             }
+            steps {
+                script {
+                    env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
+                    env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
+                }
+                sh 'printenv'
+
+                echo '### Install deps ###'
+                // sh 'npm install'
+                sh 'npm  --registry http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
+
+                echo '### Running linter ###'
+                // sh 'npm run lint'
+                // helm lint? probs not here as no helm in jenkins slave
+
+                echo '### Running tests ###'
+                // sh 'npm run test'
+
+                echo '### Running build ###'
+                sh '''
+                    npm run build
+                '''
+
+                echo '### Packaging App for Nexus ###'
+                sh '''
+                    tar -zcvf ${PACKAGE} dist Dockerfile nginx.conf
+                    curl -v -f -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
+                '''
+            }
+            // Post can be used both on individual stages and for the entire build.
         }
     }
 }
-
