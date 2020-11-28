@@ -98,51 +98,51 @@ pipeline {
             }
         }
 
-        stage("Build (Compile App)") {
-            agent {
-                node {
-                    label "jenkins-agent-npm"
-                }
-            }
-            steps {
-                script {
-                    dir('client') {
-                        env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
-                    }
-                    env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
-                }
-                sh 'printenv'
+        // stage("Build (Compile App)") {
+        //     agent {
+        //         node {
+        //             label "jenkins-agent-npm"
+        //         }
+        //     }
+        //     steps {
+        //         script {
+        //             dir('client') {
+        //                 env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
+        //             }
+        //             env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
+        //         }
+        //         sh 'printenv'
 
-                echo '### Install deps ###'
-                // sh 'npm install'
-                dir('client') {
-                    sh 'npm  --registry http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
-                }
+        //         echo '### Install deps ###'
+        //         // sh 'npm install'
+        //         dir('client') {
+        //             sh 'npm  --registry http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/labs-npm ci'
+        //         }
 
-                echo '### Running linter ###'
-                // sh 'npm run lint'
-                // helm lint? probs not here as no helm in jenkins slave
+        //         echo '### Running linter ###'
+        //         // sh 'npm run lint'
+        //         // helm lint? probs not here as no helm in jenkins slave
 
-                echo '### Running tests ###'
-                // sh 'npm run test'
+        //         echo '### Running tests ###'
+        //         // sh 'npm run test'
 
-                echo '### Running build ###'
-                dir('client') {
-                    sh '''
-                        npm run build
-                    '''
-                }
+        //         echo '### Running build ###'
+        //         dir('client') {
+        //             sh '''
+        //                 npm run build
+        //             '''
+        //         }
 
-                echo '### Packaging App for Nexus ###'
-                dir('client') {
-                    sh '''
-                        tar -zcvf ${PACKAGE} build ../Dockerfile.rh.thin.client ../client/nginx.rh.conf
-                        curl -v -f -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
-                    '''
-                }
-            }
-            // Post can be used both on individual stages and for the entire build.
-        }
+        //         echo '### Packaging App for Nexus ###'
+        //         dir('client') {
+        //             sh '''
+        //                 tar -zcvf ${PACKAGE} build ../Dockerfile.rh.thin.client ../client/nginx.rh.conf
+        //                 curl -v -f -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
+        //             '''
+        //         }
+        //     }
+        //     // Post can be used both on individual stages and for the entire build.
+        // }
 
         stage("Bake (OpenShift Build)") {
             options {
@@ -154,11 +154,16 @@ pipeline {
                 }
             }
             steps {
+                script {
+                    dir('client') {
+                        env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
+                    }
+                    env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
+                }
                 sh 'printenv'
 
                 echo '### Get Binary from Nexus and shove it in a box ###'
                 sh  '''
-                    rm -rf package-contents*
                     curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE} -o ${PACKAGE}
 
                     oc get bc ${APP_NAME} || rc=$?
