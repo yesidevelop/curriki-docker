@@ -258,7 +258,7 @@ pipeline {
                         }
                     }
                     when {
-                        expression { GIT_BRANCH ==~ /(.*master)/ }
+                        expression { GIT_BRANCH.startsWith("main") }
                     }
                     steps {
                         script {
@@ -307,7 +307,7 @@ pipeline {
                 }
             }
             when {
-                expression { GIT_BRANCH ==~ /(.*master)/ }
+                expression { GIT_BRANCH.startsWith("main") }
             }
             steps {
                 sh  '''
@@ -323,7 +323,7 @@ pipeline {
                 }
             }
             when {
-                expression { GIT_BRANCH ==~ /(.*master)/ }
+                expression { GIT_BRANCH.startsWith("main") }
             }
             steps {
                 script {
