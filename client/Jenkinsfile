@@ -154,12 +154,7 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    dir('client') {
-                        env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
-                    }
-                    env.PACKAGE = "${APP_NAME}-${VERSION}.tar.gz"
-                }
+                env.PACKAGE = "curriki-ui/curriki-ui-0.1.0.tar.gz"
                 sh 'printenv'
 
                 echo '### Get Binary from Nexus and shove it in a box ###'
