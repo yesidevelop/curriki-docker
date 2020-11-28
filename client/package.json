@@ -94,7 +94,8 @@
     "start:prod": "node server.js",
     "test": "react-scripts test",
     "eject": "npm run build",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "version": "echo $npm_package_version"
   },
   "browserslist": {
     "production": [
