@@ -136,7 +136,7 @@ pipeline {
                 echo '### Packaging App for Nexus ###'
                 dir('client') {
                     sh '''
-                        tar -zcvf ${PACKAGE} build ../Dockerfile.rh.client
+                        tar -zcvf ${PACKAGE} build ../Dockerfile.rh.thin.client ../client/nginx.rh.conf
                         curl -v -f -u ${NEXUS_CREDS} --upload-file ${PACKAGE} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_NAME}/${APP_NAME}/${PACKAGE}
                     '''
                 }
@@ -165,7 +165,7 @@ pipeline {
                     if [ $rc -eq 1 ]; then
                         echo " 🏗 no build - creating one 🏗"
                         oc new-build --binary --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker --dry-run -o yaml > /tmp/bc.yaml
-                        yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile.rh.client
+                        yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile.rh.thin.client
                         oc apply -f /tmp/bc.yaml
                     fi
 
