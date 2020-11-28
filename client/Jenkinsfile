@@ -183,7 +183,7 @@ pipeline {
         stage("Helm Package App (master)") {
             agent {
                 node {
-                    label "jenkins-slave-helm"
+                    label "jenkins-agent-helm"
                 }
             }
             steps {
