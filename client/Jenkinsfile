@@ -174,7 +174,7 @@ pipeline {
                         oc apply -f /tmp/bc.yaml
                     fi
 
-                    echo " 🏗 build found - starting it  🏗"    
+                    echo " 🏗 build found - starting it  🏗"
                     oc start-build ${APP_NAME} --from-archive=${PACKAGE} --follow
                 '''
             }
@@ -187,11 +187,17 @@ pipeline {
                 }
             }
             steps {
-                sh 'printenv'  
+                sh 'printenv'
                 sh '''
+                    git clone https://${ARGOCD_CONFIG_REPO} config-repo
+                    cd config-repo/
+                    git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
+                    
+                    # lint chart
+                    echo '### Running chart linter ###'
+                    cd ${APP_NAME}
                     helm lint chart
-                '''
-                sh '''
+    
                     # update values for deployment
                     yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
                     yq w -i chart/Chart.yaml 'version' ${VERSION}
@@ -200,9 +206,9 @@ pipeline {
                     yq w -i chart/values.yaml 'image_name' ${APP_NAME}
                     yq w -i chart/values.yaml 'image_namespace' ${TARGET_NAMESPACE}                    
                     yq w -i chart/values.yaml 'image_version' ${VERSION}
-                '''
-                sh '''
+
                     # package and release helm chart
+                    echo '### Package and release helm chart ###'
                     helm package chart/ --app-version ${VERSION} --version ${VERSION}
                     curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-${VERSION}.tgz
                 '''
