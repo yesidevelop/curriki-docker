@@ -254,7 +254,7 @@ pipeline {
                     }
                     agent {
                         node {
-                            label "jenkins-slave-argocd"
+                            label "jenkins-agent-argocd"
                         }
                     }
                     when {
@@ -319,7 +319,7 @@ pipeline {
         stage("Promote app to Test") {
             agent {
                 node {
-                    label "jenkins-slave-argocd"
+                    label "jenkins-agent-argocd"
                 }
             }
             when {
