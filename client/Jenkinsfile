@@ -189,9 +189,7 @@ pipeline {
             steps {
                 sh 'printenv'
                 script {
-                    dir('client') {
-                        env.VERSION = sh(returnStdout: true, script: "npm run version --silent").trim()
-                    }
+                    env.VERSION = "0.1.0"
                     env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
                 }
                 sh '''
