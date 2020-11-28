@@ -155,7 +155,7 @@ pipeline {
             }
             steps {
                 script {
-                    env.PACKAGE = "curriki-ui/curriki-ui-0.1.0.tar.gz"
+                    env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
                 }
                 sh 'printenv'
 
