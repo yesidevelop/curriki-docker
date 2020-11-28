@@ -150,7 +150,7 @@ pipeline {
             }
             agent {
                 node {
-                    label "master"
+                    label "jenkins-agent-argocd"
                 }
             }
             steps {
