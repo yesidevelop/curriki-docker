@@ -292,7 +292,7 @@ pipeline {
                             ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                             # sync individual app
                             argocd app sync ${APP_NAME}-dev ${ARGOCD_INFO}
-                            argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO}
+                            argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO} --sync
                         '''
                     }
                 }
@@ -356,7 +356,7 @@ pipeline {
                     ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                     # sync individual app
                     argocd app sync ${APP_NAME}-test ${ARGOCD_INFO}
-                    argocd app wait ${APP_NAME}-test ${ARGOCD_INFO}
+                    argocd app wait ${APP_NAME}-test ${ARGOCD_INFO} --sync
                 '''
             }
         }
