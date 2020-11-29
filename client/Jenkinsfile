@@ -233,7 +233,7 @@ pipeline {
                     }
                     agent {
                         node {
-                            label "jenkins-slave-helm"
+                            label "jenkins-agent-helm"
                         }
                     }
                     when {
@@ -292,73 +292,73 @@ pipeline {
                             ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                             # sync individual app
                             argocd app sync ${APP_NAME}-dev ${ARGOCD_INFO} --async
-                            argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO} --timeout=120
+                            argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO}
                         '''
                     }
                 }
             }
         }
 
-        // stage("End to End Test") {
-        //     agent {
-        //         node {
-        //             label "master"
-        //         }
-        //     }
-        //     when {
-        //         expression { GIT_BRANCH.startsWith("main") }
-        //     }
-        //     steps {
-        //         sh  '''
-        //             echo "TODO - Run tests"                    
-        //         '''
-        //     }
-        // }
+        stage("End to End Test") {
+            agent {
+                node {
+                    label "master"
+                }
+            }
+            when {
+                expression { GIT_BRANCH.startsWith("main") }
+            }
+            steps {
+                sh  '''
+                    echo "TODO - Run tests"                    
+                '''
+            }
+        }
 
-        // stage("Promote app to Test") {
-        //     agent {
-        //         node {
-        //             label "jenkins-agent-argocd"
-        //         }
-        //     }
-        //     when {
-        //         expression { GIT_BRANCH.startsWith("main") }
-        //     }
-        //     steps {
-        //         script {
-        //             env.VERSION = "0.1.0"
-        //             env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
-        //         }
-        //         echo '### Promote to test ###'
-        //         sh  '''
-        //             git clone https://${ARGOCD_CONFIG_REPO} config-repo
-        //             cd config-repo
-        //             git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
+        stage("Promote app to Test") {
+            agent {
+                node {
+                    label "jenkins-agent-argocd"
+                }
+            }
+            when {
+                expression { GIT_BRANCH.startsWith("main") }
+            }
+            steps {
+                script {
+                    env.VERSION = "0.1.0"
+                    env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
+                }
+                echo '### Promote to test ###'
+                sh  '''
+                    git clone https://${ARGOCD_CONFIG_REPO} config-repo
+                    cd config-repo
+                    git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
 
-        //             # update image tag and version to align
-        //             oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TESTING_NAMESPACE}/${APP_NAME}:${VERSION}
-        //             yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_test.values.image_version" ${VERSION}
+                    # update image tag and version to align
+                    oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TESTING_NAMESPACE}/${APP_NAME}:${VERSION}
+                    yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_test.values.image_version" ${VERSION}
 
-        //             git config --global user.email "jenkins@rht-labs.bot.com"
-        //             git config --global user.name "Jenkins"
-        //             git config --global push.default simple
+                    git config --global user.email "jenkins@rht-labs.bot.com"
+                    git config --global user.name "Jenkins"
+                    git config --global push.default simple
 
-        //             git add ${ARGOCD_CONFIG_REPO_PATH}
-        //             git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀" || rc=$?
-        //             git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@${ARGOCD_CONFIG_REPO}
-        //             git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
-        //         '''
+                    git add ${ARGOCD_CONFIG_REPO_PATH}
+                    git commit -m "🚀 AUTOMATED COMMIT - Deployment new app version ${VERSION} 🚀" || rc=$?
+                    git remote set-url origin  https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@${ARGOCD_CONFIG_REPO}
+                    git push -u origin ${ARGOCD_CONFIG_REPO_BRANCH}
+                '''
 
-        //         echo '### Ask ArgoCD to Sync the changes and roll it out ###'
-        //         sh '''
-        //             # 1 Check sync not currently in progress . if so, kill it?
-        //             # 2. sync argocd to change pushed in previous step
-        //             ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
-        //             # sync individual app
-        //             argocd app sync ${APP_NAME}-test ${ARGOCD_INFO} --async
-        //             argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO} --timeout=120
-        //         '''
-        //     }
-        // }
+                echo '### Ask ArgoCD to Sync the changes and roll it out ###'
+                sh '''
+                    # 1 Check sync not currently in progress . if so, kill it?
+                    # 2. sync argocd to change pushed in previous step
+                    ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
+                    # sync individual app
+                    argocd app sync ${APP_NAME}-test ${ARGOCD_INFO} --async
+                    argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO} --timeout=120
+                '''
+            }
+        }
     }
 }
