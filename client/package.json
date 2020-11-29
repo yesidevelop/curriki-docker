@@ -19,6 +19,7 @@
     "bootstrap-switch-button-react": "^1.2.0",
     "classnames": "^2.2.6",
     "compression": "^1.7.4",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "formik": "^2.1.5",
     "history": "^5.0.0",
@@ -93,7 +94,8 @@
     "start:prod": "node server.js",
     "test": "react-scripts test",
     "eject": "npm run build",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "version": "echo $npm_package_version"
   },
   "browserslist": {
     "production": [

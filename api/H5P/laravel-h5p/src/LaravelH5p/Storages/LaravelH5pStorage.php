@@ -232,15 +232,15 @@ class LaravelH5pStorage implements H5PFileStorage
                 } else {
                     // Rewrite relative URLs used inside stylesheets
                     $content .= preg_replace_callback(
-                        '/url\([\'"]?([^"\')]+)[\'"]?\)/i',
-                        function ($matches) use ($cssRelPath) {
-                            if (preg_match("/^(data:|([a-z0-9]+:)?\/)/i", $matches[1]) === 1) {
-                                return $matches[0]; // Not relative, skip
-                            }
-                            return 'url("../' . $cssRelPath . $matches[1] . '")';
-                        },
-                        $assetContent
-                    ) . '\n';
+                            '/url\([\'"]?([^"\')]+)[\'"]?\)/i',
+                            function ($matches) use ($cssRelPath) {
+                                if (preg_match("/^(data:|([a-z0-9]+:)?\/)/i", $matches[1]) === 1) {
+                                    return $matches[0]; // Not relative, skip
+                                }
+                                return 'url("../' . $cssRelPath . $matches[1] . '")';
+                            },
+                            $assetContent
+                        ) . '\n';
                 }
             }
 
@@ -374,8 +374,12 @@ class LaravelH5pStorage implements H5PFileStorage
         $file_dir = str_replace($filename, '', $file);
         $target_path = "{$this->path}/content/{$toId}/{$file_dir}";
 
-        // Make sure it's ready
-        self::dirReady($target_path);
+        // check s3 storage enable
+        $s3_enable = config('constants.enable_s3_h5p');
+        if (!$s3_enable) {
+            // Make sure it's ready
+            self::dirReady($target_path);
+        }
 
         $target_path .= $filename;
 
@@ -384,7 +388,13 @@ class LaravelH5pStorage implements H5PFileStorage
             return; // Nothing to copy from or target already exists
         }
 
-        copy($source_path, $target_path);
+        // save on S3 if enable or folder exists there
+        if ($s3_enable || \Storage::disk('minio')->exists('/h5p/content/' . $toId)) {
+            \Storage::disk('minio')->put("/h5p/content/{$toId}/{$file_dir}/{$filename}", file_get_contents($source_path), 'public');
+        } else {
+            // file_exists("{$this->path}/content/{$toId}/") - to check if folder exists locally
+            copy($source_path, $target_path);
+        }
     }
 
     /**
