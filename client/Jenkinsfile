@@ -359,7 +359,6 @@ pipeline {
                     argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO}
                 '''
             }
-            
         }
     }
 }
