@@ -291,8 +291,8 @@ pipeline {
                             # 2. sync argocd to change pushed in previous step
                             ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                             # sync individual app
-                            argocd app sync ${APP_NAME}-dev ${ARGOCD_INFO} --timeout=30
-                            #argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO}
+                            argocd app sync ${APP_NAME}-dev ${ARGOCD_INFO}
+                            argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO}
                         '''
                     }
                 }
@@ -355,8 +355,8 @@ pipeline {
                     # 2. sync argocd to change pushed in previous step
                     ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                     # sync individual app
-                    argocd app sync ${APP_NAME}-test ${ARGOCD_INFO} --timeout=30
-                    #argocd app wait ${APP_NAME}-test ${ARGOCD_INFO} --sync
+                    argocd app sync ${APP_NAME}-test ${ARGOCD_INFO}
+                    argocd app wait ${APP_NAME}-test ${ARGOCD_INFO}
                 '''
             }
         }
