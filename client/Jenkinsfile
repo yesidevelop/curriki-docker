@@ -129,7 +129,11 @@ pipeline {
 
                 echo '### Running linter ###'
                 // sh 'npm run lint'
-                // helm lint? probs not here as no helm in jenkins slave
+
+                echo '### Running code quality ###'
+                dir('client') {
+                    sh 'npm run sonar'
+                }
 
                 echo '### Running tests ###'
                 // sh 'npm run test'
