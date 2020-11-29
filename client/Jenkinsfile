@@ -227,7 +227,7 @@ pipeline {
         stage("Deploy App") {
             failFast true
             parallel {
-                stage("sandbox - helm3 publish and install"){
+                stage("sandbox - helm3 publish and install") {
                     options {
                         skipDefaultCheckout(true)
                     }
@@ -291,7 +291,7 @@ pipeline {
                             # 2. sync argocd to change pushed in previous step
                             ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                             # sync individual app
-                            argocd app sync ${APP_NAME}-dev ${ARGOCD_INFO}
+                            argocd app sync ${APP_NAME}-dev ${ARGOCD_INFO} --async
                             #argocd app wait ${APP_NAME}-dev ${ARGOCD_INFO}
                         '''
                     }
@@ -355,7 +355,7 @@ pipeline {
                     # 2. sync argocd to change pushed in previous step
                     ARGOCD_INFO="--auth-token ${ARGOCD_CREDS_PSW} --server ${ARGOCD_SERVER_SERVICE_HOST}:${ARGOCD_SERVER_SERVICE_PORT_HTTP} --insecure"
                     # sync individual app
-                    argocd app sync ${APP_NAME}-test ${ARGOCD_INFO}
+                    argocd app sync ${APP_NAME}-test ${ARGOCD_INFO} --async
                     #argocd app wait ${APP_NAME}-test ${ARGOCD_INFO} --sync
                 '''
             }
