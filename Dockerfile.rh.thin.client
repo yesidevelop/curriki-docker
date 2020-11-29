@@ -1,0 +1,5 @@
+FROM registry.redhat.io/rhscl/nginx-116-rhel7
+
+COPY client/nginx.rh.conf /etc/opt/rh/rh-nginx116/nginx/nginx.conf
+COPY build/ $HOME
+CMD ["nginx", "-g", "daemon off;"]
