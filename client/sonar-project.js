@@ -9,7 +9,7 @@ scanner(
       'sonar.password': 'admin',
       'sonar.projectName': 'Curriki UI',
       'sonar.projectDescription': 'Curriki UI',
-      'sonar.projectVersion': '0.1.0',
+      'sonar.projectVersion': '0.1.1',
       'sonar.sources': 'src',
       'sonar.tests': 'src',
       'sonar.inclusions': '**', // Entry point of your code
