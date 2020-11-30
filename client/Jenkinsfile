@@ -166,9 +166,6 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
-                }
                 sh 'printenv'
 
                 echo '### Get Binary from Nexus and shove it in a box ###'
@@ -197,10 +194,6 @@ pipeline {
             }
             steps {
                 sh 'printenv'
-                script {
-                    env.VERSION = "0.1.0"
-                    env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
-                }
                 sh '''
                     git clone https://${ARGOCD_CONFIG_REPO} config-repo
                     cd config-repo/
@@ -265,10 +258,6 @@ pipeline {
                         expression { GIT_BRANCH.startsWith("main") }
                     }
                     steps {
-                        script {
-                           env.VERSION = "0.1.0"
-                           env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
-                        }
                         echo '### Commit new image tag to git ###'
                         sh  '''
                             git clone https://${ARGOCD_CONFIG_REPO} config-repo
@@ -329,10 +318,6 @@ pipeline {
                 expression { GIT_BRANCH.startsWith("main") }
             }
             steps {
-                script {
-                    env.VERSION = "0.1.0"
-                    env.PACKAGE = "curriki-ui-0.1.0.tar.gz"
-                }
                 echo '### Promote to test ###'
                 sh  '''
                     git clone https://${ARGOCD_CONFIG_REPO} config-repo
