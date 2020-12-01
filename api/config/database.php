@@ -101,9 +101,11 @@ return [
             'sslmode' => 'prefer',
             'options' => [
                 \PDO::ATTR_PERSISTENT => true
-            ]
+            ],
+            'sticky' => true,
+            'sticky_by_session' => true,
         ],
-        
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),
