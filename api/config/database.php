@@ -100,6 +100,8 @@ return [
             'schema' => 'public',
             'sslmode' => 'prefer',
             'sticky' => true,
+            'sticky_by_session' => true,
+
         ],
 
         'sqlsrv' => [
