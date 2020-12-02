@@ -34,9 +34,76 @@ pipeline {
   }
 
   stages {
-    stage('Prepare Environment') {
-        steps {
-            echo 'Prepare Environment'
+
+    stage('Perpare Environment') {
+        failFast true
+        parallel {
+            stage("Release Build") {
+                options {
+                    skipDefaultCheckout(true)
+                }
+                agent {
+                    node {
+                        label "master"
+                    }
+                }
+                when {
+                    expression { GIT_BRANCH.startsWith("main") }
+                }
+                steps {
+                    script {
+                        env.TARGET_NAMESPACE = "labs-dev"
+                        env.TESTING_NAMESPACE = "labs-test"
+                        env.STAGING_NAMESPACE = "labs-staging"
+                        env.IMAGE_REPOSITORY = 'image-registry.openshift-image-registry.svc:5000'
+                        env.APP_NAME = "${NAME}".replace("/", "-").toLowerCase()
+                        env.APP_NAME_UC = "${APP_NAME}".replace("-", "_").toLowerCase()
+                    }
+                }
+            }
+            stage("Sandbox Build") {
+                options {
+                    skipDefaultCheckout(true)
+                }
+                agent {
+                    node {
+                        label "master"
+                    }
+                }
+                when {
+                    expression { GIT_BRANCH.startsWith("dev") || GIT_BRANCH.startsWith("feature") || GIT_BRANCH.startsWith("fix") }
+                }
+                steps {
+                    script {
+                        env.TARGET_NAMESPACE = "labs-dev"
+                        env.IMAGE_REPOSITORY = 'image-registry.openshift-image-registry.svc:5000'
+                        env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
+                        env.APP_NAME_UC = "${APP_NAME}".replace("-", "_").toLowerCase()
+                        env.NODE_ENV = "test"
+                    }
+                }
+            }
+            stage("Pull Request Build") {
+                options {
+                    skipDefaultCheckout(true)
+                }
+                agent {
+                    node {
+                        label "master"
+                    }
+                }
+                when {
+                    expression { GIT_BRANCH.startsWith("PR-") }
+                }
+                steps {
+                    script {
+                        env.TARGET_NAMESPACE = "labs-dev"
+                        env.IMAGE_REPOSITORY = 'image-registry.openshift-image-registry.svc:5000'
+                        env.APP_NAME = "${GIT_BRANCH}-${NAME}".replace("/", "-").toLowerCase()
+                        env.APP_NAME_UC = "${APP_NAME}".replace("-", "_").toLowerCase()
+                    }
+                }
+            }
         }
     }
   }
