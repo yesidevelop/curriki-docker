@@ -126,7 +126,10 @@ pipeline {
                             oc get bc ${APP_NAME}-base || rc=$?
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
-                                oc new-build --name=${APP_NAME}-base -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --context-dir=api --dry-run -o yaml --dockerfile - < Dockerfile.api.base > /tmp/bc.yaml
+                                oc new-build --name=${APP_NAME}-base -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --context-dir=api --dry-run -o yaml --dockerfile=$'FROM scratch'> /tmp/bc.yaml
+                                yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
+                                yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
+                                yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile.api.base
                                 oc apply -f /tmp/bc.yaml
                             fi
 
@@ -138,7 +141,9 @@ pipeline {
                             oc get bc ${APP_NAME} || rc=$?
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
-                                oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --context-dir=api --dry-run -o yaml --dockerfile - < Dockerfile.api > /tmp/bc.yaml
+                                oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --context-dir=api --dry-run -o yaml --dockerfile=$'FROM scratch' > /tmp/bc.yaml
+                                yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
+                                yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
                                 yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from.kind ImageStreamTag
                                 yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from.name ${APP_NAME}-base:latest
                                 oc apply -f /tmp/bc.yaml
@@ -165,7 +170,10 @@ pipeline {
                             oc get bc ${APP_NAME}-base || rc=$?
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
-                                oc new-build --name=${APP_NAME_FPM} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --context-dir=api --dry-run -o yaml --dockerfile - < Dockerfile.api.fpm > /tmp/bc.yaml
+                                oc new-build --name=${APP_NAME_FPM} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --context-dir=api --dry-run -o yaml --dockerfile=$'FROM scratch' > /tmp/bc.yaml
+                                yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
+                                yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
+                                yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile.api.fpm
                                 oc apply -f /tmp/bc.yaml
                             fi
 
