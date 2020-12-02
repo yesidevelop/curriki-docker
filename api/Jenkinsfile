@@ -111,9 +111,6 @@ pipeline {
             failFast true
             parallel {
                 stage("Bake base api image") {
-                    options {
-                        skipDefaultCheckout(true)
-                    }
                     agent {
                         node {
                             label "jenkins-agent-argocd"
@@ -153,9 +150,6 @@ pipeline {
                     }
                 }
                 stage("Bake fpm image") {
-                    options {
-                        skipDefaultCheckout(true)
-                    }
                     agent {
                         node {
                             label "jenkins-agent-argocd"
