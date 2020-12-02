@@ -479,16 +479,26 @@ class ActivityController extends Controller
      */
     public function h5p(Activity $activity)
     {
+        return response()->json(['test'=>'I am here']);
+        ini_set('display_errors', '1'); ini_set('display_startup_errors', '1'); error_reporting(E_ALL); 
         $h5p = App::make('LaravelH5p');
+        echo('1 >>>>>>>>>>>>>>>>>>>>>> h5p app:make'); 
         $core = $h5p::$core;
+        echo('2 >>>>>>>>>>>>>>>>>>>>>> h5p h5p::core'); 
         $settings = $h5p::get_editor();
+        echo('3 >>>>>>>>>>>>>>>>>>>>>> settings'); 
         $content = $h5p->load_content($activity->h5p_content_id);
+        echo('4 >>>>>>>>>>>>>>>>>>>>>> contents'); 
         $content['disable'] = config('laravel-h5p.h5p_preview_flag');
+        echo('5 >>>>>>>>>>>>>>>>>>>>>> disable'); 
         $embed = $h5p->get_embed($content, $settings);
+        echo('6 >>>>>>>>>>>>>>>>>>>>>> get_embed'); 
         $embed_code = $embed['embed'];
         $settings = $embed['settings'];
+        echo('7 >>>>>>>>>>>>>>>>>>>>>> settings'); 
         $user = Auth::user();
-
+        echo('8 >>>>>>>>>>>>>>>>>>>>>> auth-user'); 
+        die();
         // create event dispatch
         event(new H5pEvent(
             'content',
@@ -498,9 +508,12 @@ class ActivityController extends Controller
             $content['library']['name'],
             $content['library']['majorVersion'] . '.' . $content['library']['minorVersion']
         ));
+        echo('9 >>>>>>>>>>>>>>>>>>>>>> event'); 
         $user_data = $user->only(['id', 'name', 'email']);
 
         $h5p_data = ['settings' => $settings, 'user' => $user_data, 'embed_code' => $embed_code];
+        echo('10 >>>>>>>>>>>>>>>>>>>>>> h5p_data'); 
+        
         return response([
             'activity' => new H5pActivityResource($activity, $h5p_data),
             'playlist' => new PlaylistResource($activity->playlist),
