@@ -56,7 +56,7 @@ RUN wget https://github.com/bakins/php-fpm-exporter/releases/download/v0.6.1/php
 
 # TODO should be removed
 RUN chmod -R 777 /var/www/html/bootstrap
-
+RUN chmod -R 777 /var/www/html
 USER 1001
 
 CMD ["php-fpm", "-F", "-O"]
