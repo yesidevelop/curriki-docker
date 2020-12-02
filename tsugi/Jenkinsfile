@@ -35,6 +35,8 @@ pipeline {
 
   stages {
     stage('Prepare Environment') {
-        
+        steps {
+            echo 'Prepare Environment'
+        }
     }
 }
