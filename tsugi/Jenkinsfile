@@ -34,7 +34,6 @@ pipeline {
   }
 
   stages {
-
     stage('Perpare Environment') {
         failFast true
         parallel {
