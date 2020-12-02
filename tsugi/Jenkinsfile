@@ -105,4 +105,8 @@ pipeline {
             }
         }
     }
+
+    stage("Bake (OpenShift Build)") {
+         failFast true
+    }
 }
