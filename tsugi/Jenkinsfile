@@ -37,6 +37,7 @@ pipeline {
 
     stage('Perpare Environment') {
 
+
         failFast true
         parallel {
             stage("Release Build") {
