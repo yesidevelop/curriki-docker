@@ -1,4 +1,4 @@
-FROM php:7.3-apache
+FROM quay.io/eformat/php:7.3-apache
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
