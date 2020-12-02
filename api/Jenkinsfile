@@ -127,6 +127,7 @@ pipeline {
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
                                 oc new-build --name=${APP_NAME}-base -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --dry-run -o yaml --dockerfile=$'FROM scratch'> /tmp/bc.yaml
+                                yq d -i /tmp/bc.yaml items[1].spec.triggers
                                 yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
                                 yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
                                 yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile.api.base
@@ -142,6 +143,7 @@ pipeline {
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
                                 oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --dry-run -o yaml --dockerfile=$'FROM scratch' > /tmp/bc.yaml
+                                yq d -i /tmp/bc.yaml items[1].spec.triggers
                                 yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
                                 yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
                                 yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from.kind ImageStreamTag
@@ -171,6 +173,7 @@ pipeline {
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
                                 oc new-build --name=${APP_NAME_FPM} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --dry-run -o yaml --dockerfile=$'FROM scratch' > /tmp/bc.yaml
+                                yq d -i /tmp/bc.yaml items[1].spec.triggers
                                 yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
                                 yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
                                 yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile.api.fpm
