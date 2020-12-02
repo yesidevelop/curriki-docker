@@ -126,7 +126,7 @@ pipeline {
                             oc get bc ${APP_NAME}-base || rc=$?
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
-                                oc create is --name=${APP_NAME}-base -l app=${APP_NAME}
+                                oc create is ${APP_NAME}-base -l app=${APP_NAME}
                                 oc new-build --name=${APP_NAME}-base -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --context-dir=api --dry-run -o yaml --dockerfile=$'FROM scratch'> /tmp/bc.yaml
                                 yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
                                 yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
