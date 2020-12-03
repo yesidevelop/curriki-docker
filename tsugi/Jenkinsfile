@@ -136,6 +136,7 @@ pipeline {
             }
         }
         steps {
+            echo "Test version: ${VERSION}"
             sh 'printenv'
             sh '''
                 git clone https://${ARGOCD_CONFIG_REPO} config-repo
@@ -144,7 +145,7 @@ pipeline {
 
                 # lint chart
                 echo '### Running chart linter ###'
-                cd ${APP_NAME}
+                cd ${APP_NAME}/web
                 helm lint chart
 
                 # update values for deployment
