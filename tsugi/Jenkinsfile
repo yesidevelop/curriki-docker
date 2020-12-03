@@ -215,6 +215,9 @@ pipeline {
                         # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-base:latest ${TARGET_NAMESPACE}/${APP_NAME}-base:${VERSION}
                         # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-fpm:latest ${TARGET_NAMESPACE}/${APP_NAME}-fpm:${VERSION}
                         # yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_dev.values.image_version" ${VERSION}
+                        # TODO: tag external tsgui-web to openshift image stream
+                        oc tag --source=docker quay.io/curriki/tsugi-web ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
+                        yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_dev.values.image_version" ${VERSION}
 
                         git config --global user.email "jenkins@rht-labs.bot.com"
                         git config --global user.name "Jenkins"
