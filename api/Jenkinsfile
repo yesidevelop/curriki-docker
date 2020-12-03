@@ -120,6 +120,11 @@ pipeline {
                         expression { GIT_BRANCH.startsWith("main") }
                     }
                     steps {
+                         script {
+                            def command = $/grep APP_VERSION config/app.php | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/\1/p'/$
+                            env.VERSION = sh(returnStdout: true, script: command).trim()
+                        }
+
                         sh 'printenv'
                         echo '### Php api-base build shove it in a box ###'
                         sh  '''
@@ -196,11 +201,6 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    def command = $/grep APP_VERSION config/app.php | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/\1/p'/$
-                    env.VERSION = sh(returnStdout: true, script: command).trim()
-                }
-
                 sh 'printenv'
                 sh '''
                     git clone https://${ARGOCD_CONFIG_REPO} config-repo
