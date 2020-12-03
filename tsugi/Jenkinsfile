@@ -210,10 +210,11 @@ pipeline {
                         git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
 
                         # update image tag and version to align
-                        oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
-                        oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-base:latest ${TARGET_NAMESPACE}/${APP_NAME}-base:${VERSION}
-                        oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-fpm:latest ${TARGET_NAMESPACE}/${APP_NAME}-fpm:${VERSION}
-                        yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_dev.values.image_version" ${VERSION}
+                        # TODO: Use OpenShift internal registry to pull image instead of pull from Quay.io
+                        # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
+                        # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-base:latest ${TARGET_NAMESPACE}/${APP_NAME}-base:${VERSION}
+                        # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-fpm:latest ${TARGET_NAMESPACE}/${APP_NAME}-fpm:${VERSION}
+                        # yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_dev.values.image_version" ${VERSION}
 
                         git config --global user.email "jenkins@rht-labs.bot.com"
                         git config --global user.name "Jenkins"
