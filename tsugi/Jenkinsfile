@@ -136,7 +136,6 @@ pipeline {
             }
         }
         steps {
-            echo "Test version: ${VERSION}"
             sh 'printenv'
             sh '''
                 git clone https://${ARGOCD_CONFIG_REPO} config-repo
