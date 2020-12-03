@@ -121,8 +121,9 @@ pipeline {
                     }
                     steps {
                          script {
-                            def command = $/grep APP_VERSION config/app.php | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/\1/p'/$
-                            env.VERSION = sh(returnStdout: true, script: command).trim()
+                            //def command = $/grep APP_VERSION config/app.php | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/\1/p'/$
+                            //env.VERSION = sh(returnStdout: true, script: command).trim()
+                            env.VERSION = "1.0.0"
                         }
 
                         sh 'printenv'
