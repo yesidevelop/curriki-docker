@@ -1,4 +1,4 @@
-FROM  centos:8
+FROM  registry.centos.org/centos:8
 
 RUN dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm
 RUN dnf module enable php:remi-7.3 -y
@@ -38,7 +38,7 @@ WORKDIR /var/www/html
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY api/ /var/www/html/
-COPY ./php.ini /usr/local/etc/php/
+COPY ./php.ini /etc/php.ini
 COPY api/composer.json /var/www/
 RUN rm /etc/php-fpm.d/www.conf
 ADD pool.conf /etc/php-fpm.d/
@@ -56,7 +56,7 @@ RUN wget https://github.com/bakins/php-fpm-exporter/releases/download/v0.6.1/php
 
 # TODO should be removed
 RUN chmod -R 777 /var/www/html/bootstrap
-
+RUN chmod -R 777 /var/www/html
 USER 1001
 
 CMD ["php-fpm", "-F", "-O"]
