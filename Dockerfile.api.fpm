@@ -38,7 +38,7 @@ WORKDIR /var/www/html
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY api/ /var/www/html/
-COPY ./php.ini /usr/local/etc/php/
+COPY ./php.ini /etc/php.ini
 COPY api/composer.json /var/www/
 RUN rm /etc/php-fpm.d/www.conf
 ADD pool.conf /etc/php-fpm.d/
