@@ -10,7 +10,7 @@ pipeline {
         ARGOCD_CONFIG_REPO = "github.com/ActiveLearningStudio/rh-innovation-lab-open-shift.git"
         ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
         ARGOCD_CONFIG_REPO_BRANCH = "main"
-        
+
         // where is this in app/config.php ?
         VERSION = "1.0.0"
 
@@ -24,7 +24,7 @@ pipeline {
         NEXUS_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-nexus-password")
         ARGOCD_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-argocd-token")
 
-        // Nexus Artifact repo 
+        // Nexus Artifact repo
         NEXUS_REPO_NAME="labs-static"
         NEXUS_REPO_HELM = "helm-charts"
     }
@@ -173,7 +173,7 @@ pipeline {
                         sh 'printenv'
                         echo '### Php api-fpm build shove it in a box ###'
                         sh  '''
-                            oc get bc ${APP_NAME}-base || rc=$?
+                            oc get bc ${APP_NAME_FPM} || rc=$?
                             if [ $rc -eq 1 ]; then
                                 echo " 🏗 no build - creating one 🏗"
                                 oc new-build --name=${APP_NAME_FPM} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --dry-run -o yaml --dockerfile=$'FROM scratch' > /tmp/bc.yaml
@@ -204,19 +204,19 @@ pipeline {
                     git clone https://${ARGOCD_CONFIG_REPO} config-repo
                     cd config-repo/
                     git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
-                    
+
                     # lint chart
                     echo '### Running chart linter ###'
                     cd ${APP_NAME}
                     helm lint chart
-    
+
                     # update values for deployment
                     yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
                     yq w -i chart/Chart.yaml 'version' ${VERSION}
-                    yq w -i chart/Chart.yaml 'name' ${APP_NAME}                    
+                    yq w -i chart/Chart.yaml 'name' ${APP_NAME}
                     yq w -i chart/values.yaml 'image_repository' ${IMAGE_REPOSITORY}
                     yq w -i chart/values.yaml 'image_name' ${APP_NAME}
-                    yq w -i chart/values.yaml 'image_namespace' ${TARGET_NAMESPACE}                    
+                    yq w -i chart/values.yaml 'image_namespace' ${TARGET_NAMESPACE}
                     yq w -i chart/values.yaml 'image_version' ${VERSION}
 
                     # package and release helm chart
@@ -312,7 +312,7 @@ pipeline {
             }
             steps {
                 sh  '''
-                    echo "TODO - Run tests"                    
+                    echo "TODO - Run tests"
                 '''
             }
         }
