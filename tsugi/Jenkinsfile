@@ -109,21 +109,58 @@ pipeline {
     }
 
     stage("Bake (OpenShift Build)") {
-        failFast true
-        parallel {
-            stage("Bake base image") {
-                agent {
-                    node {
-                        label "jenkins-agent-argocd"
+                failFast true
+                parallel {
+                    stage("Bake base api image") {
+                        agent {
+                            node {
+                                label "jenkins-agent-argocd"
+                            }
+                        }
+                        when {
+                            expression { GIT_BRANCH.startsWith("main") }
+                        }
+                        steps {
+                            sh 'printenv'
+                            echo 'TODO: build docker image for tsgui-web'
+                        }
                     }
-                }
-                when {
-                    expression { GIT_BRANCH.startsWith("main") }
-                }
-                steps {
-                    sh 'printenv'
+
                 }
             }
+
+    stage("Helm Package App (master)") {
+        agent {
+            node {
+                label "jenkins-agent-helm"
+            }
+        }
+        steps {
+            sh 'printenv'
+            sh '''
+                git clone https://${ARGOCD_CONFIG_REPO} config-repo
+                cd config-repo/
+                git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
+
+                # lint chart
+                echo '### Running chart linter ###'
+                cd ${APP_NAME}
+                helm lint chart
+
+                # update values for deployment
+                yq w -i chart/Chart.yaml 'appVersion' ${VERSION}
+                yq w -i chart/Chart.yaml 'version' ${VERSION}
+                yq w -i chart/Chart.yaml 'name' ${APP_NAME}
+                yq w -i chart/values.yaml 'image_repository' ${IMAGE_REPOSITORY}
+                yq w -i chart/values.yaml 'image_name' ${APP_NAME}
+                yq w -i chart/values.yaml 'image_namespace' ${TARGET_NAMESPACE}
+                yq w -i chart/values.yaml 'image_version' ${VERSION}
+
+                # package and release helm chart
+                echo '### Package and release helm chart ###'
+                helm package chart/ --app-version ${VERSION} --version ${VERSION}
+                curl -v -f -u ${NEXUS_CREDS} http://${SONATYPE_NEXUS_SERVICE_SERVICE_HOST}:${SONATYPE_NEXUS_SERVICE_SERVICE_PORT}/repository/${NEXUS_REPO_HELM}/ --upload-file ${APP_NAME}-${VERSION}.tgz
+            '''
         }
     }
   }
