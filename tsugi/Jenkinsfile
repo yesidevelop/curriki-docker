@@ -132,6 +132,9 @@ pipeline {
                         if [ "$rc" = "1" ]; then
                             echo " 🏗 no build - creating one 🏗"
                             oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${TSGUI_GIT_REPO} --dockerfile=$'FROM scratch' --dry-run -o yaml > /tmp/bc.yaml
+                            yq d -i /tmp/bc.yaml items[1].spec.triggers
+                            yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
+                            yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
                             yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile
                             cat /tmp/bc.yaml
                             oc apply -f /tmp/bc.yaml
