@@ -126,7 +126,7 @@ pipeline {
                         oc get bc ${APP_NAME} || rc=$?
                         if [ "$rc" = "1" ]; then
                             echo " 🏗 no build - creating one 🏗"
-                            oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${TSGUI_GIT_REPO}  --dry-run -o yaml > /tmp/bc.yaml
+                            oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH}  --dry-run -o yaml > /tmp/bc.yaml
                             yq d -i /tmp/bc.yaml items[1].spec.triggers
                             oc apply -f /tmp/bc.yaml
                         fi
