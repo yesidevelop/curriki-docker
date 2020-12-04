@@ -483,29 +483,7 @@ class LaravelH5pStorage implements H5PFileStorage
      */
     private static function copyFileTree($source, $destination)
     {
-        if (!self::dirReady($destination)) {
-            throw new Exception('unabletocopy');
-        }
-
-        $ignoredFiles = self::getIgnoredFiles("{$source}/.h5pignore");
-
-        $dir = opendir($source);
-        if ($dir === FALSE) {
-            trigger_error('Unable to open directory ' . $source, E_USER_WARNING);
-            throw new Exception('unabletocopy');
-        }
-
-        while (false !== ($file = readdir($dir))) {
-            if (($file != '.') && ($file != '..') && $file != '.git' && $file != '.gitignore' && !in_array($file, $ignoredFiles)) {
-                if (is_dir("{$source}/{$file}")) {
-                    self::copyFileTree("{$source}/{$file}", "{$destination}/{$file}");
-                } else {
-                    copy("{$source}/{$file}", "{$destination}/{$file}");
-                }
-            }
-        }
-
-        closedir($dir);
+        \File::copyDirectory($source, $destination);
     }
 
     /**
