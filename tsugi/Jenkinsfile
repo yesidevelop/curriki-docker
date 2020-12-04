@@ -10,7 +10,7 @@ pipeline {
       ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
       ARGOCD_CONFIG_REPO_BRANCH = "main"
 
-      TSGUI_GIT_REPO = "https://github.com/ActiveLearningStudio/tsugi"
+      TSGUI_GIT_REPO = "https://github.com/ActiveLearningStudio/tsugi.git"
 
       // TODO wire PHP version into pipeline
       VERSION = "0.0.1"
