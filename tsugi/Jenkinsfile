@@ -6,7 +6,6 @@ pipeline {
   environment {
       // GLobal Vars
       NAME = "curriki-tsugi"
-      APP_NAME_FPM = "curriki-tsugi-fpm"
       ARGOCD_CONFIG_REPO = "github.com/ActiveLearningStudio/rh-innovation-lab-open-shift.git"
       ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
       ARGOCD_CONFIG_REPO_BRANCH = "main"
