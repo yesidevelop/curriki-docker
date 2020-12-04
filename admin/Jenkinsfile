@@ -38,6 +38,7 @@ pipeline {
   stages {
     stage('Prepare Environment') {
        echo 'todo prepare environment'
+       echo 'test auto trigger build'
     }
   }
 }
