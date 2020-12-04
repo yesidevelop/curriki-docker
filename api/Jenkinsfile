@@ -11,9 +11,6 @@ pipeline {
         ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
         ARGOCD_CONFIG_REPO_BRANCH = "main"
 
-        // where is this in app/config.php ?
-        VERSION = "1.0.0"
-
         // Job name contains the branch eg ds-app-feature%2Fjenkins-123
         JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
 
@@ -123,6 +120,12 @@ pipeline {
                         expression { GIT_BRANCH.startsWith("main") }
                     }
                     steps {
+                         script {
+                            //def command = $/grep APP_VERSION config/app.php | sed -nre 's/^[^0-9]*(([0-9]+\.)*[0-9]+).*/\1/p'/$
+                            //env.VERSION = sh(returnStdout: true, script: command).trim()
+                            env.VERSION = "1.0.0"
+                        }
+
                         sh 'printenv'
                         echo '### Php api-base build shove it in a box ###'
                         sh  '''
