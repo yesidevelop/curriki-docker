@@ -11,6 +11,8 @@ pipeline {
       ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
       ARGOCD_CONFIG_REPO_BRANCH = "main"
 
+      TSGUI_GIT_REPO = "https://github.com/ActiveLearningStudio/tsugi"
+
       // TODO wire PHP version into pipeline
       VERSION = "1.0.0"
 
@@ -127,7 +129,7 @@ pipeline {
                         oc get bc ${APP_NAME} || rc=$?
                         if [ $rc -eq 1 ]; then
                             echo " 🏗 no build - creating one 🏗"
-                            oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker https://github.com/ActiveLearningStudio/tsugi --dry-run -o yaml --dockerfile=$'FROM scratch'> /tmp/bc.yaml
+                            oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${TSGUI_GIT_REPO} --dry-run -o yaml --dockerfile=$'FROM scratch'> /tmp/bc.yaml
                             yq d -i /tmp/bc.yaml items[1].spec.triggers
                             yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
                             yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
