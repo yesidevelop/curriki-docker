@@ -129,7 +129,7 @@ pipeline {
                     // sh 'printenv'
                     sh  '''
                         oc get bc ${APP_NAME} || rc=$?
-                        if [ "$rc" != "0" ]; then
+                        if [ "$rc" = "1" ]; then
                             echo " 🏗 no build - creating one 🏗"
                             oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${TSGUI_GIT_REPO} --dry-run -o yaml --dockerfile=$'FROM scratch'> /tmp/bc.yaml
                             yq d -i /tmp/bc.yaml items[1].spec.triggers
