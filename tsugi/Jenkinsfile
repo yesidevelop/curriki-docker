@@ -140,9 +140,9 @@ pipeline {
                             '''
 
                     }
-
                 }
             }
+     }
 
     stage("Helm Package App (master)") {
         agent {
