@@ -7,7 +7,9 @@ pipeline {
       // GLobal Vars
       NAME = "curriki-tsugi"
       APP_NAME_FPM = "curriki-tsugi-fpm"
-      ARGOCD_CONFIG_REPO = "github.com/ActiveLearningStudio/rh-innovation-lab-open-shift.git"
+
+      // TODO use forked github repo for test
+      ARGOCD_CONFIG_REPO = "github.com/cookcodeblog/rh-innovation-lab-open-shift.git"
       ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
       ARGOCD_CONFIG_REPO_BRANCH = "main"
 
@@ -114,7 +116,7 @@ pipeline {
     stage("Bake (OpenShift Build)") {
         failFast true
         parallel {
-            stage("Bake base api image") {
+            stage("Bake tsgui image") {
                 agent {
                     node {
                         label "jenkins-agent-argocd"
@@ -124,7 +126,7 @@ pipeline {
                     expression { GIT_BRANCH.startsWith("main") }
                 }
                 steps {
-                    sh 'printenv'
+                    // sh 'printenv'
                     sh  '''
                         oc get bc ${APP_NAME} || rc=$?
                         if [ $rc -eq 1 ]; then
@@ -225,14 +227,9 @@ pipeline {
                         git checkout ${ARGOCD_CONFIG_REPO_BRANCH}
 
                         # update image tag and version to align
-                        # TODO: Use OpenShift internal registry to pull image instead of pull from Quay.io
-                        # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
-                        # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-base:latest ${TARGET_NAMESPACE}/${APP_NAME}-base:${VERSION}
-                        # oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}-fpm:latest ${TARGET_NAMESPACE}/${APP_NAME}-fpm:${VERSION}
-                        # yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_dev.values.image_version" ${VERSION}
-                        # TODO: tag external tsgui-web to openshift image stream
-                        oc tag --source=docker quay.io/curriki/tsugi-web ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
+                        oc tag ${OPENSHIFT_BUILD_NAMESPACE}/${APP_NAME}:latest ${TARGET_NAMESPACE}/${APP_NAME}:${VERSION}
                         yq w -i ${ARGOCD_CONFIG_REPO_PATH} "applications.${APP_NAME_UC}_dev.values.image_version" ${VERSION}
+
 
                         git config --global user.email "jenkins@rht-labs.bot.com"
                         git config --global user.name "Jenkins"
