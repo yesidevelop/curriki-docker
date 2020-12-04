@@ -107,5 +107,36 @@ pipeline {
            }
        }
     }
+
+    stage("Bake (OpenShift Build)") {
+        failFast true
+        parallel {
+            stage("Bake image") {
+                agent {
+                    node {
+                        label "jenkins-agent-argocd"
+                    }
+                }
+                when {
+                    expression { GIT_BRANCH.startsWith("main") }
+                }
+                steps {
+                    // sh 'printenv'
+                    sh  '''
+                        oc get bc ${APP_NAME} || rc=$?
+                        if [ "$rc" = "1" ]; then
+                            echo " 🏗 no build - creating one 🏗"
+                            oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${TSGUI_GIT_REPO}  --dry-run -o yaml > /tmp/bc.yaml
+                            yq d -i /tmp/bc.yaml items[1].spec.triggers
+                            oc apply -f /tmp/bc.yaml
+                        fi
+
+                        echo " 🏗 build found - starting it  🏗"
+                        oc start-build ${APP_NAME} --follow
+                    '''
+                }
+            }
+        }
+     }
   }
 }
