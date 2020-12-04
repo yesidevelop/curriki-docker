@@ -129,6 +129,7 @@ pipeline {
                             oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH}  --dry-run -o yaml > /tmp/bc.yaml
                             yq d -i /tmp/bc.yaml items[1].spec.triggers
                             yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile.admin
+                            cat /tmp/bc.yaml
                             oc apply -f /tmp/bc.yaml
                         fi
 
