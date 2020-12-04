@@ -1,0 +1,43 @@
+pipeline {
+  agent {
+    label "master"
+  }
+
+  environment {
+      // GLobal Vars
+      NAME = "curriki-admin"
+      ARGOCD_CONFIG_REPO = "github.com/ActiveLearningStudio/rh-innovation-lab-open-shift.git"
+      ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
+      ARGOCD_CONFIG_REPO_BRANCH = "main"
+
+      // TODO wire PHP version into pipeline
+      VERSION = "0.0.1"
+
+      // Job name contains the branch eg ds-app-feature%2Fjenkins-123
+      JOB_NAME = "${JOB_NAME}".replace("%2F", "-").replace("/", "-")
+
+      GIT_SSL_NO_VERIFY = true
+
+      // Credentials bound in OpenShift
+      GIT_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-git-auth")
+      NEXUS_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-nexus-password")
+      ARGOCD_CREDS = credentials("${OPENSHIFT_BUILD_NAMESPACE}-argocd-token")
+
+      // Nexus Artifact repo
+      NEXUS_REPO_NAME="labs-static"
+      NEXUS_REPO_HELM = "helm-charts"
+  }
+
+  options {
+      buildDiscarder(logRotator(numToKeepStr: '50', artifactNumToKeepStr: '1'))
+      timeout(time: 15, unit: 'MINUTES')
+      ansiColor('xterm')
+      timestamps()
+  }
+
+  stages {
+    stage('Prepare Environment') {
+       echo 'todo prepare environment'
+    }
+  }
+}
