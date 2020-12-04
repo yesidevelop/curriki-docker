@@ -136,6 +136,7 @@ pipeline {
                             yq d -i /tmp/bc.yaml items[1].spec.source.dockerfile
                             yq d -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.from
                             yq w -i /tmp/bc.yaml items[1].spec.strategy.dockerStrategy.dockerfilePath Dockerfile
+                            cat /tmp/bc.yaml
                             oc apply -f /tmp/bc.yaml
                         fi
 
