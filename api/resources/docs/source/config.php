@@ -13,7 +13,7 @@ return [
     |
     */
     'deployment' => [
-        
+
         'type' => 'git',
 
         'repository' => '',
@@ -21,6 +21,6 @@ return [
         'branch' => 'gh-pages',
 
         'message' => 'Site updated: ' . strftime('%YYYY-%MM-%DD %HH:%mm:%ss')
-        
+
     ]
 ];
