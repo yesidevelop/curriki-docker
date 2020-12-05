@@ -253,5 +253,21 @@ pipeline {
          }
      }
 
+     stage("End to End Test") {
+         agent {
+             node {
+                 label "master"
+             }
+         }
+         when {
+             expression { GIT_BRANCH.startsWith("main") }
+         }
+         steps {
+             sh  '''
+                 echo "TODO - Run tests"
+             '''
+         }
+     }
+
   }
 }
