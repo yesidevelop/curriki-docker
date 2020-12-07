@@ -10,11 +10,6 @@ pipeline {
       ARGOCD_CONFIG_REPO_PATH = "applications/deployment/values.yaml"
       ARGOCD_CONFIG_REPO_BRANCH = "main"
 
-      // TODO don't need define these two env var after move Jenkinsfile to tsugi repo
-      // and replace them with GIT_REPO and GIT_BRANCH when create OpenShift build config
-      TSUGI_GIT_REPO = "https://github.com/ActiveLearningStudio/tsugi.git"
-      TSUGI_GIT_BRANCH = "master"
-
       // TODO wire PHP version into pipeline
       VERSION = "0.0.1"
 
@@ -131,7 +126,7 @@ pipeline {
                         oc get bc ${APP_NAME} || rc=$?
                         if [ "$rc" = "1" ]; then
                             echo " 🏗 no build - creating one 🏗"
-                            oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${TSUGI_GIT_REPO}#${TSUGI_GIT_BRANCH} --dry-run -o yaml > /tmp/bc.yaml
+                            oc new-build --name=${APP_NAME} -l app=${APP_NAME} --strategy=docker ${GIT_URL}#${GIT_BRANCH} --dry-run -o yaml > /tmp/bc.yaml
                             cat /tmp/bc.yaml
                             yq d -i /tmp/bc.yaml items[0].spec.triggers
                             cat /tmp/bc.yaml
