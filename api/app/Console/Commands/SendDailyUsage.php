@@ -47,7 +47,8 @@ class SendDailyUsage extends Command
      */
     public function handle()
     {
-        $hubspot_url = 'https://api.hsforms.com/submissions/v3/integration/submit/7874555/537d0f95-c495-4cba-bc52-3ea2d7eee8a1';
+        //$hubspot_url = 'https://api.hsforms.com/submissions/v3/integration/submit/7874555/537d0f95-c495-4cba-bc52-3ea2d7eee8a1';
+        $hubspot_url = 'https://api.hsforms.com/submissions/v3/integration/submit/8979919/1eefa37f-9d8e-4334-8dba-bf26a695e727';
         $headers = [
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
@@ -94,7 +95,7 @@ class SendDailyUsage extends Command
                             'name' => 'email',
                             'value' => $user->email,
                         ],
-                        [
+                        /*[
                             'name' => 'firstname',
                             'value' => $user->first_name . ' ' . $user->last_name,
                         ],
@@ -117,7 +118,7 @@ class SendDailyUsage extends Command
                         [
                             'name' => 'activity_count',
                             'value' => $activity_count,
-                        ],
+                        ],*/
                     ],
                 ];
 
