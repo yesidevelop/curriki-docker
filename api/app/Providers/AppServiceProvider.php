@@ -86,18 +86,14 @@ class AppServiceProvider extends ServiceProvider
 
             // Listen for the request handled event and set more tags for the trace
             Event::listen(RequestHandled::class, function (RequestHandled $e) {
-                app('context.tracer.globalSpan')->setTags([
-                    'user_id' => auth()->user()->id ?? "-",
-                    'company_id' => auth()->user()->company_id ?? "-",
-
-                    'request_host' => $e->request->getHost(),
-                    'request_path' => $path = $e->request->path(),
-                    'request_method' => $e->request->method(),
-
-                    'api' => str_contains($path, 'api'),
-                    'response_status' => $e->response->getStatusCode(),
-                    'error' => !$e->response->isSuccessful(),
-                ]);
+                $globalSpan = app('context.tracer.globalSpan');
+                $globalSpan->setTag('user_id',  auth()->user()->id ?? "-");
+                $globalSpan->setTag('request_host', $e->request->getHost());
+                $globalSpan->setTag('request_path', $path = $e->request->path());
+                $globalSpan->setTag('request_method', $e->request->method());
+                $globalSpan->setTag('api', str_contains($path, 'api'));
+                $globalSpan->setTag('response_status', $e->response->getStatusCode());
+                $globalSpan->setTag('error', !$e->response->isSuccessful());
             });
 
             // Also listen for queries and log then,
