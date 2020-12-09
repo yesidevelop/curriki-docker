@@ -20,6 +20,7 @@
         "guzzlehttp/guzzle": "^6.3",
         "h5p/h5p-core": "^1.24",
         "h5p/h5p-editor": "^1.24",
+        "jukylin/jaeger-php": "dev-master@dev",
         "laravel/framework": "^7.0",
         "laravel/passport": "^9.3",
         "laravel/scout": "^8.2",
@@ -27,6 +28,7 @@
         "laravel/ui": "^2.1",
         "maatwebsite/excel": "^3.1",
         "predis/predis": "^1.1",
+        "ramsey/uuid": "^4.1",
         "rusticisoftware/tincan": "@stable"
     },
     "require-dev": {
