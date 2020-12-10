@@ -64,7 +64,9 @@ class CloneActivity implements ShouldQueue
             $user_id = $userRepository->parseToken($this->token);
             $user = User::find($user_id);
             $userName = rtrim($user->first_name . ' ' . $user->last_name, ' ');
-            $user->notify(new CloneNotification($message, $process, $userName));
+            $user->notify((new CloneNotification($message, $process, $userName))->delay([
+                'mail' => now()->addSeconds(5),
+            ]));
         } catch (\Exception $e) {
             Log::error($e->getMessage());
         }
