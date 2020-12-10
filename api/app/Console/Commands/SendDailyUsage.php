@@ -54,7 +54,7 @@ class SendDailyUsage extends Command
             'Content-Type' => 'application/json',
         ];
 
-        $users = User::all();
+        /*$users = User::all();
 
         foreach ($users as $user) {
             $login_count = UserLogin::where('user_id', $user->id)
@@ -88,12 +88,12 @@ class SendDailyUsage extends Command
                 }
             }
 
-            if ($login_count > 0 || $project_count > 0 || $playlist_count > 0 || $activity_count > 0) {
+            if ($login_count > 0 || $project_count > 0 || $playlist_count > 0 || $activity_count > 0) {*/
                 $data = [
                     'fields' => [
                         [
                             'name' => 'email',
-                            'value' => $user->email,
+                            'value' => 'fahad@curriki.org',
                         ],
                         /*[
                             'name' => 'firstname',
@@ -136,7 +136,7 @@ class SendDailyUsage extends Command
                     Log::error('Submit Data: ', $data);
                     Log::error($e);
                 }
-            }
-        }
+            /*}
+        }*/
     }
 }
